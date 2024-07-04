@@ -65,8 +65,7 @@ class UserPost extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 3.0, vertical: 5.0),
+                    padding: EdgeInsets.symmetric(horizontal: 3.0, vertical: 5.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,16 +102,12 @@ class UserPost extends StatelessWidget {
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 0.0),
                                 child: StreamBuilder(
-                                  stream: likesRef
-                                      .where('postId', isEqualTo: post!.postId)
-                                      .snapshots(),
-                                  builder: (context,
-                                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  stream: likesRef.where('postId', isEqualTo: post!.postId).snapshots(),
+                                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                                     if (snapshot.hasData) {
                                       QuerySnapshot snap = snapshot.data!;
                                       List<DocumentSnapshot> docs = snap.docs;
-                                      return buildLikesCount(
-                                          context, docs.length ?? 0);
+                                      return buildLikesCount(context, docs.length.isNaN ? 0 : docs.length);
                                     } else {
                                       return buildLikesCount(context, 0);
                                     }
@@ -122,17 +117,12 @@ class UserPost extends StatelessWidget {
                             ),
                             SizedBox(width: 5.0),
                             StreamBuilder(
-                              stream: commentRef
-                                  .doc(post!.postId!)
-                                  .collection("comments")
-                                  .snapshots(),
-                              builder: (context,
-                                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                              stream: commentRef.doc(post!.postId!).collection("comments").snapshots(),
+                              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                                 if (snapshot.hasData) {
                                   QuerySnapshot snap = snapshot.data!;
                                   List<DocumentSnapshot> docs = snap.docs;
-                                  return buildCommentsCount(
-                                      context, docs.length ?? 0);
+                                  return buildCommentsCount(context, docs.length.isNaN ? 0 : docs.length);
                                 } else {
                                   return buildCommentsCount(context, 0);
                                 }
@@ -141,15 +131,13 @@ class UserPost extends StatelessWidget {
                           ],
                         ),
                         Visibility(
-                          visible: post!.description != null &&
-                              post!.description.toString().isNotEmpty,
+                          visible: post!.description != null && post!.description.toString().isNotEmpty,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 5.0, top: 3.0),
                             child: Text(
                               '${post?.description ?? ""}',
                               style: TextStyle(
-                                color:
-                                    Theme.of(context).textTheme.caption!.color,
+                                color: Theme.of(context).textTheme.bodySmall!.color,
                                 fontSize: 15.0,
                               ),
                               maxLines: 2,
@@ -180,10 +168,7 @@ class UserPost extends StatelessWidget {
 
   buildLikeButton() {
     return StreamBuilder(
-      stream: likesRef
-          .where('postId', isEqualTo: post!.postId)
-          .where('userId', isEqualTo: currentUserId())
-          .snapshots(),
+      stream: likesRef.where('postId', isEqualTo: post!.postId).where('userId', isEqualTo: currentUserId()).snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData) {
           List<QueryDocumentSnapshot> docs = snapshot.data?.docs ?? [];
@@ -224,8 +209,7 @@ class UserPost extends StatelessWidget {
               return !isLiked;
             } else {
               likesRef.doc(docs[0].id).delete();
-              services.removeLikeFromNotification(
-                  post!.ownerId!, post!.postId!, currentUserId());
+              services.removeLikeFromNotification(post!.ownerId!, post!.postId!, currentUserId());
               return isLiked;
             }
           }
@@ -233,8 +217,7 @@ class UserPost extends StatelessWidget {
           return LikeButton(
             onTap: onLikeButtonTapped,
             size: 25.0,
-            circleColor:
-                CircleColor(start: Color(0xffFFC0CB), end: Color(0xffff0000)),
+            circleColor: CircleColor(start: Color(0xffFFC0CB), end: Color(0xffff0000)),
             bubblesColor: BubblesColor(
                 dotPrimaryColor: Color(0xffFFA500),
                 dotSecondaryColor: Color(0xffd8392b),
@@ -306,8 +289,7 @@ class UserPost extends StatelessWidget {
       builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasData) {
           DocumentSnapshot snap = snapshot.data!;
-          UserModel user =
-              UserModel.fromJson(snap.data() as Map<String, dynamic>);
+          UserModel user = UserModel.fromJson(snap.data() as Map<String, dynamic>);
           return Visibility(
             visible: !isMe,
             child: Align(
@@ -331,8 +313,7 @@ class UserPost extends StatelessWidget {
                         user.photoUrl!.isEmpty
                             ? CircleAvatar(
                                 radius: 20.0,
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.secondary,
+                                backgroundColor: Theme.of(context).colorScheme.secondary,
                                 child: Center(
                                   child: Text(
                                     '${user.username![0].toUpperCase()}',

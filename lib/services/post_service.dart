@@ -21,10 +21,9 @@ class PostService extends Service {
   }
 
 //uploads post to the post collection
-  uploadPost(File image, String location, String description) async {
+  uploadPost(File image, String? location, String? description) async {
     String link = await uploadImage(posts, image);
-    DocumentSnapshot doc =
-        await usersRef.doc(firebaseAuth.currentUser!.uid).get();
+    DocumentSnapshot doc = await usersRef.doc(firebaseAuth.currentUser!.uid).get();
     user = UserModel.fromJson(
       doc.data() as Map<String, dynamic>,
     );
@@ -44,8 +43,7 @@ class PostService extends Service {
   }
 
 //upload a comment
-  uploadComment(String currentUserId, String comment, String postId,
-      String ownerId, String mediaUrl) async {
+  uploadComment(String currentUserId, String comment, String postId, String ownerId, String mediaUrl) async {
     DocumentSnapshot doc = await usersRef.doc(currentUserId).get();
     user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
     await commentRef.doc(postId).collection("comments").add({
@@ -57,21 +55,14 @@ class PostService extends Service {
     });
     bool isNotMe = ownerId != currentUserId;
     if (isNotMe) {
-      addCommentToNotification("comment", comment, user!.username!, user!.id!,
-          postId, mediaUrl, ownerId, user!.photoUrl!);
+      addCommentToNotification(
+          "comment", comment, user!.username!, user!.id!, postId, mediaUrl, ownerId, user!.photoUrl!);
     }
   }
 
 //add the comment to notification collection
-  addCommentToNotification(
-      String type,
-      String commentData,
-      String username,
-      String userId,
-      String postId,
-      String mediaUrl,
-      String ownerId,
-      String userDp) async {
+  addCommentToNotification(String type, String commentData, String username, String userId, String postId,
+      String mediaUrl, String ownerId, String userDp) async {
     await notificationRef.doc(ownerId).collection('notifications').add({
       "type": type,
       "commentData": commentData,
@@ -85,13 +76,9 @@ class PostService extends Service {
   }
 
 //add the likes to the notfication collection
-  addLikesToNotification(String type, String username, String userId,
-      String postId, String mediaUrl, String ownerId, String userDp) async {
-    await notificationRef
-        .doc(ownerId)
-        .collection('notifications')
-        .doc(postId)
-        .set({
+  addLikesToNotification(String type, String username, String userId, String postId, String mediaUrl, String ownerId,
+      String userDp) async {
+    await notificationRef.doc(ownerId).collection('notifications').doc(postId).set({
       "type": type,
       "username": username,
       "userId": firebaseAuth.currentUser!.uid,
@@ -103,21 +90,15 @@ class PostService extends Service {
   }
 
   //remove likes from notification
-  removeLikeFromNotification(
-      String ownerId, String postId, String currentUser) async {
+  removeLikeFromNotification(String ownerId, String postId, String currentUser) async {
     bool isNotMe = currentUser != ownerId;
 
     if (isNotMe) {
       DocumentSnapshot doc = await usersRef.doc(currentUser).get();
       user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
-      notificationRef
-          .doc(ownerId)
-          .collection('notifications')
-          .doc(postId)
-          .get()
-          .then((doc) => {
-                if (doc.exists) {doc.reference.delete()}
-              });
+      notificationRef.doc(ownerId).collection('notifications').doc(postId).get().then((doc) => {
+            if (doc.exists) {doc.reference.delete()}
+          });
     }
   }
 }

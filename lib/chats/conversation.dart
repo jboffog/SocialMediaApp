@@ -46,8 +46,7 @@ class _ConversationState extends State<Conversation> {
     messageController.addListener(() {
       if (focusNode.hasFocus && messageController.text.isNotEmpty) {
         setTyping(true);
-      } else if (!focusNode.hasFocus ||
-          (focusNode.hasFocus && messageController.text.isEmpty)) {
+      } else if (!focusNode.hasFocus || (focusNode.hasFocus && messageController.text.isEmpty)) {
         setTyping(false);
       }
     });
@@ -57,8 +56,7 @@ class _ConversationState extends State<Conversation> {
     UserViewModel viewModel = Provider.of<UserViewModel>(context);
     viewModel.setUser();
     var user = Provider.of<UserViewModel>(context, listen: true).user;
-    Provider.of<ConversationViewModel>(context, listen: false)
-        .setUserTyping(widget.chatId, user, typing);
+    Provider.of<ConversationViewModel>(context, listen: false).setUserTyping(widget.chatId, user, typing);
   }
 
   @override
@@ -66,8 +64,7 @@ class _ConversationState extends State<Conversation> {
     UserViewModel viewModel = Provider.of<UserViewModel>(context);
     viewModel.setUser();
     var user = Provider.of<UserViewModel>(context, listen: true).user;
-    return Consumer<ConversationViewModel>(
-        builder: (BuildContext context, viewModel, Widget? child) {
+    return Consumer<ConversationViewModel>(builder: (BuildContext context, viewModel, Widget? child) {
       return Scaffold(
         key: viewModel.scaffoldKey,
         appBar: AppBar(
@@ -93,8 +90,7 @@ class _ConversationState extends State<Conversation> {
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       List messages = snapshot.data!.docs;
-                      viewModel.setReadCount(
-                          widget.chatId, user, messages.length);
+                      viewModel.setReadCount(widget.chatId, user, messages.length);
                       return ListView.builder(
                         controller: scrollController,
                         padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -138,22 +134,13 @@ class _ConversationState extends State<Conversation> {
                           child: TextField(
                             controller: messageController,
                             focusNode: focusNode,
-                            style: TextStyle(
-                              fontSize: 15.0,
-                              color:
-                                  Theme.of(context).textTheme.headline6!.color,
-                            ),
+                            style: TextStyle(fontSize: 15.0, color: Theme.of(context).textTheme.titleLarge!.color),
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.all(10.0),
                               enabledBorder: InputBorder.none,
                               border: InputBorder.none,
                               hintText: "Type your message",
-                              hintStyle: TextStyle(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .headline6!
-                                    .color,
-                              ),
+                              hintStyle: TextStyle(color: Theme.of(context).textTheme.titleLarge!.color),
                             ),
                             maxLines: null,
                           ),
@@ -201,8 +188,7 @@ class _ConversationState extends State<Conversation> {
       stream: usersRef.doc('${widget.userId}').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          DocumentSnapshot documentSnapshot =
-              snapshot.data as DocumentSnapshot<Object?>;
+          DocumentSnapshot documentSnapshot = snapshot.data as DocumentSnapshot<Object?>;
           UserModel user = UserModel.fromJson(
             documentSnapshot.data() as Map<String, dynamic>,
           );
@@ -216,8 +202,7 @@ class _ConversationState extends State<Conversation> {
                     child: user.photoUrl!.isEmpty
                         ? CircleAvatar(
                             radius: 25.0,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.secondary,
+                            backgroundColor: Theme.of(context).colorScheme.secondary,
                             child: Center(
                               child: Text(
                                 '${user.username![0].toUpperCase()}',
@@ -254,8 +239,7 @@ class _ConversationState extends State<Conversation> {
                         stream: chatRef.doc('${widget.chatId}').snapshots(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
-                            DocumentSnapshot? snap =
-                                snapshot.data as DocumentSnapshot<Object?>;
+                            DocumentSnapshot? snap = snapshot.data as DocumentSnapshot<Object?>;
                             Map? data = snap.data() as Map<dynamic, dynamic>?;
                             Map? usersTyping = data?['typing'] ?? {};
                             return Text(
@@ -323,8 +307,7 @@ class _ConversationState extends State<Conversation> {
     );
   }
 
-  sendMessage(ConversationViewModel viewModel, var user,
-      {bool isImage = false, int? imageType}) async {
+  sendMessage(ConversationViewModel viewModel, var user, {bool isImage = false, int? imageType}) async {
     String msg;
     if (isImage) {
       msg = await viewModel.pickImage(
@@ -354,10 +337,7 @@ class _ConversationState extends State<Conversation> {
           //Add the IDs of the two users to the chatID reference
           //the users map will be concatenation of the two users
           //involved in the chat
-          chatIdRef.add({
-            "users": getUser(firebaseAuth.currentUser!.uid, widget.userId),
-            "chatId": id
-          });
+          chatIdRef.add({"users": getUser(firebaseAuth.currentUser!.uid, widget.userId), "chatId": id});
           viewModel.sendMessage(widget.chatId, message);
         });
         //update the reads to an empty map in other to avoid null value bug
@@ -386,10 +366,6 @@ class _ConversationState extends State<Conversation> {
   }
 
   Stream<QuerySnapshot> messageListStream(String documentId) {
-    return chatRef
-        .doc(documentId)
-        .collection('messages')
-        .orderBy('time')
-        .snapshots();
+    return chatRef.doc(documentId).collection('messages').orderBy('time').snapshots();
   }
 }

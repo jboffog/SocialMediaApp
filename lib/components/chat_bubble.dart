@@ -48,19 +48,18 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final align =
-        widget.isMe! ? CrossAxisAlignment.end : CrossAxisAlignment.start;
-    final radius = widget.isMe!
-        ? BorderRadius.only(
-            topLeft: Radius.circular(5.0),
-            bottomLeft: Radius.circular(5.0),
-            bottomRight: Radius.circular(10.0),
-          )
-        : BorderRadius.only(
-            topRight: Radius.circular(5.0),
-            bottomLeft: Radius.circular(10.0),
-            bottomRight: Radius.circular(5.0),
-          );
+    final align = widget.isMe! ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+    // final radius = widget.isMe!
+    //     ? BorderRadius.only(
+    //         topLeft: Radius.circular(5.0),
+    //         bottomLeft: Radius.circular(5.0),
+    //         bottomRight: Radius.circular(10.0),
+    //       )
+    //     : BorderRadius.only(
+    //         topRight: Radius.circular(5.0),
+    //         bottomLeft: Radius.circular(10.0),
+    //         bottomRight: Radius.circular(5.0),
+    //       );
     return Column(
       crossAxisAlignment: align,
       children: <Widget>[
@@ -68,13 +67,10 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
           elevation: 0.0,
           margin: const EdgeInsets.all(3.0),
           padding: const EdgeInsets.all(5.0),
-          alignment:
-              widget.isMe! ? Alignment.centerRight : Alignment.centerLeft,
+          alignment: widget.isMe! ? Alignment.centerRight : Alignment.centerLeft,
           clipper: ChatBubbleClipper3(
             nipSize: 0,
-            type: widget.isMe!
-                ? BubbleType.sendBubble
-                : BubbleType.receiverBubble,
+            type: widget.isMe! ? BubbleType.sendBubble : BubbleType.receiverBubble,
           ),
           backGroundColor: chatBubbleColor(),
           child: Column(
@@ -82,15 +78,12 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Padding(
-                padding:
-                    EdgeInsets.all(widget.type == MessageType.TEXT ? 10 : 0),
+                padding: EdgeInsets.all(widget.type == MessageType.TEXT ? 10 : 0),
                 child: widget.type == MessageType.TEXT
                     ? Text(
                         widget.message!,
                         style: TextStyle(
-                          color: widget.isMe!
-                              ? Colors.white
-                              : Theme.of(context).textTheme.headline6!.color,
+                          color: widget.isMe! ? Colors.white : Theme.of(context).textTheme.titleLarge!.color,
                         ),
                       )
                     : CachedNetworkImage(
@@ -117,7 +110,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
             child: Text(
               timeago.format(widget.time!.toDate()),
               style: TextStyle(
-                color: Theme.of(context).textTheme.headline6!.color,
+                color: Theme.of(context).textTheme.titleLarge!.color,
                 fontSize: 10.0,
               ),
             ),

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:loading_overlay/loading_overlay.dart';
@@ -90,8 +89,7 @@ class _EditProfileState extends State<EditProfile> {
                               padding: const EdgeInsets.all(1.0),
                               child: CircleAvatar(
                                 radius: 65.0,
-                                backgroundImage:
-                                    NetworkImage(widget.user!.photoUrl!),
+                                backgroundImage: NetworkImage(widget.user!.photoUrl!),
                               ),
                             )
                           : Padding(

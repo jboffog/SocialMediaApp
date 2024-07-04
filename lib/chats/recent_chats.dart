@@ -10,13 +10,12 @@ import 'package:social_media_app/widgets/indicators.dart';
 class Chats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    UserViewModel viewModel =
-        Provider.of<UserViewModel>(context, listen: false);
+    UserViewModel viewModel = Provider.of<UserViewModel>(context, listen: false);
     viewModel.setUser();
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
-          onTap: (){
+          onTap: () {
             Navigator.pop(context);
           },
           child: Icon(Icons.keyboard_backspace),
@@ -24,7 +23,7 @@ class Chats extends StatelessWidget {
         title: Text("Chats"),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: userChatsStream('${viewModel.user!.uid ?? ""}'),
+        stream: userChatsStream('${viewModel.user?.uid ?? ""}'),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List chatList = snapshot.data!.docs;
@@ -44,17 +43,16 @@ class Chats extends StatelessWidget {
                         List users = chatListSnapshot.get('users');
                         // remove the current user's id from the Users
                         // list so we can get the second user's id
-                        users.remove('${viewModel.user!.uid ?? ""}');
+                        users.remove('${viewModel.user?.uid ?? ""}');
                         String recipient = users[0];
                         return ChatItem(
-                          userId: recipient,
-                          messageCount: messages.length,
-                          msg: message.content!,
-                          time: message.time!,
-                          chatId: chatListSnapshot.id,
-                          type: message.type!,
-                          currentUserId: viewModel.user!.uid ?? "",
-                        );
+                            userId: recipient,
+                            messageCount: messages.length,
+                            msg: message.content!,
+                            time: message.time!,
+                            chatId: chatListSnapshot.id,
+                            type: message.type!,
+                            currentUserId: viewModel.user?.uid ?? "");
                       } else {
                         return SizedBox();
                       }
@@ -84,17 +82,10 @@ class Chats extends StatelessWidget {
   }
 
   Stream<QuerySnapshot> userChatsStream(String uid) {
-    return chatRef
-        .where('users', arrayContains: '$uid')
-        .orderBy('lastTextTime', descending: true)
-        .snapshots();
+    return chatRef.where('users', arrayContains: '$uid').orderBy('lastTextTime', descending: true).snapshots();
   }
 
   Stream<QuerySnapshot> messageListStream(String documentId) {
-    return chatRef
-        .doc(documentId)
-        .collection('messages')
-        .orderBy('time', descending: true)
-        .snapshots();
+    return chatRef.doc(documentId).collection('messages').orderBy('time', descending: true).snapshots();
   }
 }

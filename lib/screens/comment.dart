@@ -87,46 +87,38 @@ class _CommentsState extends State<Comments> {
                             controller: commentsTEC,
                             style: TextStyle(
                               fontSize: 15.0,
-                              color:
-                                  Theme.of(context).textTheme.headline6!.color,
+                              color: Theme.of(context).textTheme.titleLarge!.color,
                             ),
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.all(10.0),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(5.0),
                                 borderSide: BorderSide(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: Theme.of(context).colorScheme.secondary,
                                 ),
                               ),
                               focusedErrorBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(5.0),
                                 borderSide: BorderSide(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: Theme.of(context).colorScheme.secondary,
                                 ),
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(5.0),
                                 borderSide: BorderSide(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: Theme.of(context).colorScheme.secondary,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: Theme.of(context).colorScheme.secondary,
                                 ),
                                 borderRadius: BorderRadius.circular(5.0),
                               ),
                               hintText: "Write your comment...",
                               hintStyle: TextStyle(
                                 fontSize: 15.0,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .headline6!
-                                    .color,
+                                color: Theme.of(context).textTheme.titleLarge!.color,
                               ),
                             ),
                             maxLines: null,
@@ -197,15 +189,12 @@ class _CommentsState extends State<Comments> {
                       ),
                       SizedBox(width: 3.0),
                       StreamBuilder(
-                        stream: likesRef
-                            .where('postId', isEqualTo: widget.post!.postId)
-                            .snapshots(),
-                        builder:
-                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                        stream: likesRef.where('postId', isEqualTo: widget.post!.postId).snapshots(),
+                        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                           if (snapshot.hasData) {
                             QuerySnapshot snap = snapshot.data!;
                             List<DocumentSnapshot> docs = snap.docs;
-                            return buildLikesCount(context, docs.length ?? 0);
+                            return buildLikesCount(context, docs.length.isNaN ? 0 : docs.length);
                           } else {
                             return buildLikesCount(context, 0);
                           }
@@ -228,15 +217,11 @@ class _CommentsState extends State<Comments> {
     return CommentsStreamWrapper(
       shrinkWrap: true,
       // padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      stream: commentRef
-          .doc(widget.post!.postId)
-          .collection('comments')
-          .orderBy('timestamp', descending: true)
-          .snapshots(),
+      stream:
+          commentRef.doc(widget.post!.postId).collection('comments').orderBy('timestamp', descending: true).snapshots(),
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (_, DocumentSnapshot snapshot) {
-        CommentModel comments =
-            CommentModel.fromJson(snapshot.data() as Map<String, dynamic>);
+        CommentModel comments = CommentModel.fromJson(snapshot.data() as Map<String, dynamic>);
         // return Column(
         //   crossAxisAlignment: CrossAxisAlignment.start,
         //   mainAxisAlignment: MainAxisAlignment.start,
@@ -302,7 +287,7 @@ class _CommentsState extends State<Comments> {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 50.0),
-                child: Text( comments.comment!.trim()),
+                child: Text(comments.comment!.trim()),
               ),
               SizedBox(height: 10.0),
             ],
@@ -365,8 +350,7 @@ class _CommentsState extends State<Comments> {
           return LikeButton(
             onTap: onLikeButtonTapped,
             size: 25.0,
-            circleColor:
-                CircleColor(start: Color(0xffFFC0CB), end: Color(0xffff0000)),
+            circleColor: CircleColor(start: Color(0xffFFC0CB), end: Color(0xffff0000)),
             bubblesColor: BubblesColor(
                 dotPrimaryColor: Color(0xffFFA500),
                 dotSecondaryColor: Color(0xffd8392b),
@@ -405,11 +389,7 @@ class _CommentsState extends State<Comments> {
     if (isNotMe) {
       DocumentSnapshot doc = await usersRef.doc(currentUserId()).get();
       user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
-      notificationRef
-          .doc(widget.post!.ownerId)
-          .collection('notifications')
-          .doc(widget.post!.postId)
-          .set({
+      notificationRef.doc(widget.post!.ownerId).collection('notifications').doc(widget.post!.postId).set({
         "type": "like",
         "username": user!.username!,
         "userId": currentUserId(),

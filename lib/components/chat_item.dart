@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/chats/conversation.dart';
-import 'package:social_media_app/components/text_time.dart';
 import 'package:social_media_app/models/enum/message_type.dart';
 import 'package:social_media_app/models/user.dart';
 import 'package:social_media_app/utils/firebase.dart';
@@ -35,21 +34,18 @@ class ChatItem extends StatelessWidget {
       stream: usersRef.doc('$userId').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          DocumentSnapshot documentSnapshot =
-              snapshot.data as DocumentSnapshot<Object?>;
+          DocumentSnapshot documentSnapshot = snapshot.data as DocumentSnapshot<Object?>;
           UserModel user = UserModel.fromJson(
             documentSnapshot.data() as Map<String, dynamic>,
           );
           return ListTile(
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
+            contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
             leading: Stack(
               children: <Widget>[
                 user.photoUrl == null || user.photoUrl!.isEmpty
                     ? CircleAvatar(
                         radius: 25.0,
-                        backgroundColor:
-                            Theme.of(context).colorScheme.secondary,
+                        backgroundColor: Theme.of(context).colorScheme.secondary,
                         child: Center(
                           child: Text(
                             '${user.username![0].toUpperCase()}',
@@ -80,9 +76,7 @@ class ChatItem extends StatelessWidget {
                     child: Center(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: user.isOnline ?? false
-                              ? Color(0xff00d72f)
-                              : Colors.grey,
+                          color: user.isOnline ?? false ? Color(0xff00d72f) : Colors.grey,
                           borderRadius: BorderRadius.circular(6),
                         ),
                         height: 11,

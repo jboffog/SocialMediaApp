@@ -1,11 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:social_media_app/models/status.dart';
 import 'package:social_media_app/models/user.dart';
 import 'package:social_media_app/utils/firebase.dart';
-import 'package:social_media_app/view_models/status/status_view_model.dart';
 import 'package:social_media_app/widgets/indicators.dart';
 import 'package:story/story.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -31,7 +29,7 @@ class StatusScreen extends StatefulWidget {
 class _StatusScreenState extends State<StatusScreen> {
   @override
   Widget build(BuildContext context) {
-    StatusViewModel viewModel = Provider.of<StatusViewModel>(context);
+    // StatusViewModel viewModel = Provider.of<StatusViewModel>(context);
     return Scaffold(
       body: GestureDetector(
         onVerticalDragUpdate: (value) {
@@ -44,15 +42,13 @@ class _StatusScreenState extends State<StatusScreen> {
             return snapshot.connectionState == ConnectionState.waiting
                 ? circularProgress(context)
                 : StoryPageView(
-                    indicatorPadding:
-                        EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
+                    indicatorPadding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
                     indicatorHeight: 15.0,
                     initialPage: 0,
                     onPageLimitReached: () {
                       Navigator.pop(context);
                     },
-                    indicatorVisitedColor:
-                        Theme.of(context).colorScheme.secondary,
+                    indicatorVisitedColor: Theme.of(context).colorScheme.secondary,
                     indicatorDuration: Duration(seconds: 30),
                     itemBuilder: (context, pageIndex, storyIndex) {
                       StatusModel stats = StatusModel.fromJson(
@@ -88,29 +84,23 @@ class _StatusScreenState extends State<StatusScreen> {
                                 future: usersRef.doc(widget.userId).get(),
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
-                                    DocumentSnapshot documentSnapshot = snapshot
-                                        .data as DocumentSnapshot<Object?>;
-                                    UserModel user = UserModel.fromJson(
-                                        documentSnapshot.data()
-                                            as Map<String, dynamic>);
+                                    DocumentSnapshot documentSnapshot = snapshot.data as DocumentSnapshot<Object?>;
+                                    UserModel user =
+                                        UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
                                     return Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 10.0),
+                                      padding: const EdgeInsets.only(right: 10.0),
                                       child: Row(
                                         children: [
                                           Container(
                                             decoration: BoxDecoration(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary,
+                                              color: Theme.of(context).colorScheme.secondary,
                                               shape: BoxShape.circle,
                                               border: Border.all(
                                                 color: Colors.transparent,
                                               ),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.3),
+                                                  color: Colors.grey.withOpacity(0.3),
                                                   offset: new Offset(0.0, 0.0),
                                                   blurRadius: 2.0,
                                                   spreadRadius: 0.0,
@@ -118,13 +108,11 @@ class _StatusScreenState extends State<StatusScreen> {
                                               ],
                                             ),
                                             child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(1.0),
+                                              padding: const EdgeInsets.all(1.0),
                                               child: CircleAvatar(
                                                 radius: 15.0,
                                                 backgroundColor: Colors.grey,
-                                                backgroundImage:
-                                                    CachedNetworkImageProvider(
+                                                backgroundImage: CachedNetworkImageProvider(
                                                   user.photoUrl!,
                                                 ),
                                               ),
@@ -160,10 +148,7 @@ class _StatusScreenState extends State<StatusScreen> {
                               ),
                             ),
                             Positioned(
-                              bottom:
-                                  widget.userId == firebaseAuth.currentUser!.uid
-                                      ? 10.0
-                                      : 30.0,
+                              bottom: widget.userId == firebaseAuth.currentUser!.uid ? 10.0 : 30.0,
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -171,14 +156,11 @@ class _StatusScreenState extends State<StatusScreen> {
                                   Container(
                                     color: Colors.grey.withOpacity(0.2),
                                     width: MediaQuery.of(context).size.width,
-                                    constraints:
-                                        BoxConstraints(maxHeight: 50.0),
+                                    constraints: BoxConstraints(maxHeight: 50.0),
                                     child: Center(
                                       child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
                                           Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -193,22 +175,19 @@ class _StatusScreenState extends State<StatusScreen> {
                                       ),
                                     ),
                                   ),
-                                  if (widget.userId ==
-                                      firebaseAuth.currentUser!.uid)
+                                  if (widget.userId == firebaseAuth.currentUser!.uid)
                                     TextButton.icon(
                                       onPressed: () {},
                                       icon: Icon(
                                         Icons.remove_red_eye_outlined,
                                         size: 20.0,
-                                        color:
-                                            Theme.of(context).iconTheme.color,
+                                        color: Theme.of(context).iconTheme.color,
                                       ),
                                       label: Text(
                                         stats.viewers!.length.toString(),
                                         style: TextStyle(
                                           fontSize: 12.0,
-                                          color:
-                                              Theme.of(context).iconTheme.color,
+                                          color: Theme.of(context).iconTheme.color,
                                         ),
                                       ),
                                     ),

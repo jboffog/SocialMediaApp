@@ -75,8 +75,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
               Center(
                 child: ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        Theme.of(context).colorScheme.secondary),
+                    backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.secondary),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5.0),

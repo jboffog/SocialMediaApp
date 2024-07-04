@@ -15,7 +15,7 @@ class Feeds extends StatefulWidget {
   _FeedsState createState() => _FeedsState();
 }
 
-class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin{
+class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   int page = 5;
@@ -25,8 +25,7 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin{
   @override
   void initState() {
     scrollController.addListener(() async {
-      if (scrollController.position.pixels ==
-          scrollController.position.maxScrollExtent) {
+      if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
         setState(() {
           page = page + 5;
           loadingMore = true;
@@ -38,6 +37,7 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin{
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     print('>>>');
     return Scaffold(
       key: scaffoldKey,
@@ -70,8 +70,7 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin{
       ),
       body: RefreshIndicator(
         color: Theme.of(context).colorScheme.secondary,
-        onRefresh: () =>
-            postRef.orderBy('timestamp', descending: true).limit(page).get(),
+        onRefresh: () => postRef.orderBy('timestamp', descending: true).limit(page).get(),
         child: SingleChildScrollView(
           // controller: scrollController,
           physics: NeverScrollableScrollPhysics(),
@@ -83,10 +82,7 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin{
               Container(
                 height: MediaQuery.of(context).size.height,
                 child: FutureBuilder(
-                  future: postRef
-                      .orderBy('timestamp', descending: true)
-                      .limit(page)
-                      .get(),
+                  future: postRef.orderBy('timestamp', descending: true).limit(page).get(),
                   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.hasData) {
                       var snap = snapshot.data;
@@ -96,16 +92,14 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin{
                         itemCount: docs.length,
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
-                          PostModel posts =
-                              PostModel.fromJson(docs[index].data());
+                          PostModel posts = PostModel.fromJson(docs[index].data());
                           return Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: UserPost(post: posts),
                           );
                         },
                       );
-                    } else if (snapshot.connectionState ==
-                        ConnectionState.waiting) {
+                    } else if (snapshot.connectionState == ConnectionState.waiting) {
                       return circularProgress(context);
                     } else
                       return Center(

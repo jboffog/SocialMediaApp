@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/auth/register/profile_pic.dart';
 import 'package:social_media_app/services/auth_service.dart';
@@ -23,8 +22,7 @@ class RegisterViewModel extends ChangeNotifier {
     if (!form.validate()) {
       validate = true;
       notifyListeners();
-      showInSnackBar(
-          'Please fix the errors in red before submitting.', context);
+      showInSnackBar('Please fix the errors in red before submitting.', context);
     } else {
       if (password == cPassword) {
         loading = true;
@@ -48,8 +46,7 @@ class RegisterViewModel extends ChangeNotifier {
           loading = false;
           notifyListeners();
           print(e);
-          showInSnackBar(
-              '${auth.handleFirebaseAuthError(e.toString())}', context);
+          showInSnackBar('${auth.handleFirebaseAuthError(e.toString())}', context);
         }
         loading = false;
         notifyListeners();

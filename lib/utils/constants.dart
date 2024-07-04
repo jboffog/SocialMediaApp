@@ -17,7 +17,6 @@ class Constants {
   static Color darkBG = Color(0xff2B2B2B);
 
   static ThemeData lightTheme = ThemeData(
-    backgroundColor: lightBG,
     primaryColor: lightPrimary,
     textSelectionTheme: TextSelectionThemeData(
       cursorColor: lightAccent,
@@ -42,45 +41,42 @@ class Constants {
         fontWeight: FontWeight.w700,
       ),
     ),
-    colorScheme: ColorScheme.fromSwatch().copyWith(
-      secondary: lightAccent,
-    ),
+    colorScheme: ColorScheme.fromSwatch()
+        .copyWith(
+          secondary: lightAccent,
+        )
+        .copyWith(background: lightBG),
   );
 
   static ThemeData darkTheme = ThemeData(
-    iconTheme: const IconThemeData(color: Colors.white),
-    colorScheme: ColorScheme.fromSwatch(
-      accentColor: darkAccent,
-    ).copyWith(
-      secondary: darkAccent,
-      brightness: Brightness.dark,
-    ),
-    backgroundColor: darkBG,
-    primaryColor: darkPrimary,
-    scaffoldBackgroundColor: darkBG,
-    textSelectionTheme: TextSelectionThemeData(
-      cursorColor: darkAccent,
-    ),
-    bottomAppBarTheme: BottomAppBarTheme(
-      elevation: 0,
-      color: darkBG,
-    ),
-    appBarTheme: AppBarTheme(
-      elevation: 0.0,
-      backgroundColor: darkBG,
       iconTheme: const IconThemeData(color: Colors.white),
-      toolbarTextStyle: GoogleFonts.nunito(
-        color: Colors.white,
-        fontSize: 20.0,
-        fontWeight: FontWeight.w700,
+      primaryColor: darkPrimary,
+      scaffoldBackgroundColor: darkBG,
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: darkAccent,
       ),
-      titleTextStyle: GoogleFonts.nunito(
-        color: Colors.white,
-        fontSize: 20.0,
-        fontWeight: FontWeight.w700,
+      bottomAppBarTheme: BottomAppBarTheme(
+        elevation: 0,
+        color: darkBG,
       ),
-    ),
-  );
+      appBarTheme: AppBarTheme(
+        elevation: 0.0,
+        backgroundColor: darkBG,
+        iconTheme: const IconThemeData(color: Colors.white),
+        toolbarTextStyle: GoogleFonts.nunito(
+          color: Colors.white,
+          fontSize: 20.0,
+          fontWeight: FontWeight.w700,
+        ),
+        titleTextStyle: GoogleFonts.nunito(
+          color: Colors.white,
+          fontSize: 20.0,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      colorScheme: ColorScheme.fromSwatch(accentColor: darkAccent)
+          .copyWith(secondary: darkAccent, brightness: Brightness.dark)
+          .copyWith(background: darkBG));
 
   static List<T> map<T>(List list, Function handler) {
     List<T> result = [];

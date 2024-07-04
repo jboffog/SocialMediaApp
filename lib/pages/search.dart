@@ -69,6 +69,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -152,8 +153,10 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
     if (!loading) {
       if (filteredUsers.isEmpty) {
         return Center(
-          child: Text("No User Found",
-              style: TextStyle(fontWeight: FontWeight.bold),),
+          child: Text(
+            "No User Found",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
         );
       } else {
         return Expanded(
@@ -162,8 +165,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
               itemCount: filteredUsers.length,
               itemBuilder: (BuildContext context, int index) {
                 DocumentSnapshot doc = filteredUsers[index];
-                UserModel user =
-                    UserModel.fromJson(doc.data() as Map<String, dynamic>);
+                UserModel user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
                 if (doc.id == currentUserId()) {
                   Timer(Duration(milliseconds: 500), () {
                     setState(() {
@@ -176,8 +178,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
                   leading: user.photoUrl!.isEmpty
                       ? CircleAvatar(
                           radius: 20.0,
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondary,
+                          backgroundColor: Theme.of(context).colorScheme.secondary,
                           child: Center(
                             child: Text(
                               '${user.username![0].toUpperCase()}',
@@ -217,8 +218,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
                                   ),
                                 )
                                 .snapshots(),
-                            builder: (context,
-                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                               if (snapshot.hasData) {
                                 var snap = snapshot.data;
                                 List docs = snap!.docs;
@@ -230,8 +230,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
                                       )
                                     : Conversation(
                                         userId: doc.id,
-                                        chatId:
-                                            docs[0].get('chatId').toString(),
+                                        chatId: docs[0].get('chatId').toString(),
                                       );
                               }
                               return Conversation(

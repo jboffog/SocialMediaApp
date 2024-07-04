@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:like_button/like_button.dart';
@@ -102,11 +101,7 @@ class _ViewImageState extends State<ViewImage> {
     if (isNotMe) {
       DocumentSnapshot doc = await usersRef.doc(currentUserId()).get();
       user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
-      notificationRef
-          .doc(widget.post!.ownerId)
-          .collection('notifications')
-          .doc(widget.post!.postId)
-          .set({
+      notificationRef.doc(widget.post!.ownerId).collection('notifications').doc(widget.post!.postId).set({
         "type": "like",
         "username": user!.username!,
         "userId": currentUserId(),
@@ -187,8 +182,7 @@ class _ViewImageState extends State<ViewImage> {
           return LikeButton(
             onTap: onLikeButtonTapped,
             size: 25.0,
-            circleColor:
-                CircleColor(start: Color(0xffFFC0CB), end: Color(0xffff0000)),
+            circleColor: CircleColor(start: Color(0xffFFC0CB), end: Color(0xffff0000)),
             bubblesColor: BubblesColor(
               dotPrimaryColor: Color(0xffFFA500),
               dotSecondaryColor: Color(0xffd8392b),

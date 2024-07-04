@@ -45,11 +45,8 @@ class _ProfileState extends State<Profile> {
   }
 
   checkIfFollowing() async {
-    DocumentSnapshot doc = await followersRef
-        .doc(widget.profileId)
-        .collection('userFollowers')
-        .doc(currentUserId())
-        .get();
+    DocumentSnapshot doc =
+        await followersRef.doc(widget.profileId).collection('userFollowers').doc(currentUserId()).get();
     setState(() {
       isFollowing = doc.exists;
     });
@@ -116,9 +113,7 @@ class _ProfileState extends State<Profile> {
                               child: user.photoUrl!.isEmpty
                                   ? CircleAvatar(
                                       radius: 40.0,
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
+                                      backgroundColor: Theme.of(context).colorScheme.secondary,
                                       child: Center(
                                         child: Text(
                                           '${user.username![0].toUpperCase()}',
@@ -132,8 +127,7 @@ class _ProfileState extends State<Profile> {
                                     )
                                   : CircleAvatar(
                                       radius: 40.0,
-                                      backgroundImage:
-                                          CachedNetworkImageProvider(
+                                      backgroundImage: CachedNetworkImageProvider(
                                         '${user.photoUrl}',
                                       ),
                                     ),
@@ -150,8 +144,7 @@ class _ProfileState extends State<Profile> {
                                       child: SizedBox(width: 10.0),
                                     ),
                                     Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Container(
                                           width: 130.0,
@@ -179,8 +172,7 @@ class _ProfileState extends State<Profile> {
                                         SizedBox(width: 10.0),
                                         Column(
                                           mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               user.email!,
@@ -205,9 +197,7 @@ class _ProfileState extends State<Profile> {
                                               children: [
                                                 Icon(
                                                   Ionicons.settings_outline,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
+                                                  color: Theme.of(context).colorScheme.secondary,
                                                 ),
                                                 Text(
                                                   'settings',
@@ -246,24 +236,17 @@ class _ProfileState extends State<Profile> {
                         Container(
                           height: 50.0,
                           child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 30.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 30.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 StreamBuilder(
-                                  stream: postRef
-                                      .where('ownerId',
-                                          isEqualTo: widget.profileId)
-                                      .snapshots(),
-                                  builder: (context,
-                                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  stream: postRef.where('ownerId', isEqualTo: widget.profileId).snapshots(),
+                                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                                     if (snapshot.hasData) {
-                                      QuerySnapshot<Object?>? snap =
-                                          snapshot.data;
+                                      QuerySnapshot<Object?>? snap = snapshot.data;
                                       List<DocumentSnapshot> docs = snap!.docs;
-                                      return buildCount(
-                                          "POSTS", docs.length ?? 0);
+                                      return buildCount("POSTS", docs.length.isNaN ? 0 : docs.length);
                                     } else {
                                       return buildCount("POSTS", 0);
                                     }
@@ -278,18 +261,12 @@ class _ProfileState extends State<Profile> {
                                   ),
                                 ),
                                 StreamBuilder(
-                                  stream: followersRef
-                                      .doc(widget.profileId)
-                                      .collection('userFollowers')
-                                      .snapshots(),
-                                  builder: (context,
-                                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  stream: followersRef.doc(widget.profileId).collection('userFollowers').snapshots(),
+                                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                                     if (snapshot.hasData) {
-                                      QuerySnapshot<Object?>? snap =
-                                          snapshot.data;
+                                      QuerySnapshot<Object?>? snap = snapshot.data;
                                       List<DocumentSnapshot> docs = snap!.docs;
-                                      return buildCount(
-                                          "FOLLOWERS", docs.length ?? 0);
+                                      return buildCount("FOLLOWERS", docs.length.isNaN ? 0 : docs.length);
                                     } else {
                                       return buildCount("FOLLOWERS", 0);
                                     }
@@ -304,18 +281,12 @@ class _ProfileState extends State<Profile> {
                                   ),
                                 ),
                                 StreamBuilder(
-                                  stream: followingRef
-                                      .doc(widget.profileId)
-                                      .collection('userFollowing')
-                                      .snapshots(),
-                                  builder: (context,
-                                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  stream: followingRef.doc(widget.profileId).collection('userFollowing').snapshots(),
+                                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                                     if (snapshot.hasData) {
-                                      QuerySnapshot<Object?>? snap =
-                                          snapshot.data;
+                                      QuerySnapshot<Object?>? snap = snapshot.data;
                                       List<DocumentSnapshot> docs = snap!.docs;
-                                      return buildCount(
-                                          "FOLLOWING", docs.length ?? 0);
+                                      return buildCount("FOLLOWING", docs.length.isNaN ? 0 : docs.length);
                                     } else {
                                       return buildCount("FOLLOWING", 0);
                                     }
@@ -351,8 +322,7 @@ class _ProfileState extends State<Profile> {
                           const Spacer(),
                           IconButton(
                             onPressed: () async {
-                              DocumentSnapshot doc =
-                                  await usersRef.doc(widget.profileId).get();
+                              DocumentSnapshot doc = await usersRef.doc(widget.profileId).get();
                               var currentUser = UserModel.fromJson(
                                 doc.data() as Map<String, dynamic>,
                               );
@@ -472,34 +442,19 @@ class _ProfileState extends State<Profile> {
       isFollowing = false;
     });
     //remove follower
-    followersRef
-        .doc(widget.profileId)
-        .collection('userFollowers')
-        .doc(currentUserId())
-        .get()
-        .then((doc) {
+    followersRef.doc(widget.profileId).collection('userFollowers').doc(currentUserId()).get().then((doc) {
       if (doc.exists) {
         doc.reference.delete();
       }
     });
     //remove following
-    followingRef
-        .doc(currentUserId())
-        .collection('userFollowing')
-        .doc(widget.profileId)
-        .get()
-        .then((doc) {
+    followingRef.doc(currentUserId()).collection('userFollowing').doc(widget.profileId).get().then((doc) {
       if (doc.exists) {
         doc.reference.delete();
       }
     });
     //remove from notifications feeds
-    notificationRef
-        .doc(widget.profileId)
-        .collection('notifications')
-        .doc(currentUserId())
-        .get()
-        .then((doc) {
+    notificationRef.doc(widget.profileId).collection('notifications').doc(currentUserId()).get().then((doc) {
       if (doc.exists) {
         doc.reference.delete();
       }
@@ -513,23 +468,11 @@ class _ProfileState extends State<Profile> {
       isFollowing = true;
     });
     //updates the followers collection of the followed user
-    followersRef
-        .doc(widget.profileId)
-        .collection('userFollowers')
-        .doc(currentUserId())
-        .set({});
+    followersRef.doc(widget.profileId).collection('userFollowers').doc(currentUserId()).set({});
     //updates the following collection of the currentUser
-    followingRef
-        .doc(currentUserId())
-        .collection('userFollowing')
-        .doc(widget.profileId)
-        .set({});
+    followingRef.doc(currentUserId()).collection('userFollowing').doc(widget.profileId).set({});
     //update the notification feeds
-    notificationRef
-        .doc(widget.profileId)
-        .collection('notifications')
-        .doc(currentUserId())
-        .set({
+    notificationRef.doc(widget.profileId).collection('notifications').doc(currentUserId()).set({
       "type": "follow",
       "ownerId": widget.profileId,
       "username": users?.username,
@@ -547,14 +490,10 @@ class _ProfileState extends State<Profile> {
     return StreamGridWrapper(
       shrinkWrap: true,
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      stream: postRef
-          .where('ownerId', isEqualTo: widget.profileId)
-          .orderBy('timestamp', descending: true)
-          .snapshots(),
+      stream: postRef.where('ownerId', isEqualTo: widget.profileId).orderBy('timestamp', descending: true).snapshots(),
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (_, DocumentSnapshot snapshot) {
-        PostModel posts =
-            PostModel.fromJson(snapshot.data() as Map<String, dynamic>);
+        PostModel posts = PostModel.fromJson(snapshot.data() as Map<String, dynamic>);
         return PostTile(
           post: posts,
         );
@@ -598,9 +537,7 @@ class _ProfileState extends State<Profile> {
               child: Padding(
                 padding: EdgeInsets.all(3.0),
                 child: Icon(
-                  docs.isEmpty
-                      ? CupertinoIcons.heart
-                      : CupertinoIcons.heart_fill,
+                  docs.isEmpty ? CupertinoIcons.heart : CupertinoIcons.heart_fill,
                   color: Colors.red,
                 ),
               ),

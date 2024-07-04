@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/models/status.dart';
 import 'package:social_media_app/models/user.dart';
@@ -43,10 +42,7 @@ class StoryWidget extends StatelessWidget {
                           // list so we can get the rest of the user's id
                           users.remove('${firebaseAuth.currentUser!.uid}');
                           return _buildStatusAvatar(
-                              statusListSnapshot.get('userId'),
-                              statusListSnapshot.id,
-                              status.statusId!,
-                              index);
+                              statusListSnapshot.get('userId'), statusListSnapshot.id, status.statusId!, index);
                         } else {
                           return const SizedBox();
                         }
@@ -80,8 +76,7 @@ class StoryWidget extends StatelessWidget {
       stream: usersRef.doc('$userId').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          DocumentSnapshot documentSnapshot =
-              snapshot.data as DocumentSnapshot<Object?>;
+          DocumentSnapshot documentSnapshot = snapshot.data as DocumentSnapshot<Object?>;
           UserModel user = UserModel.fromJson(
             documentSnapshot.data() as Map<String, dynamic>,
           );

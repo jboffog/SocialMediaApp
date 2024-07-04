@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -55,8 +54,7 @@ class EditProfileViewModel extends ChangeNotifier {
     if (!form.validate()) {
       validate = true;
       notifyListeners();
-      showInSnackBar(
-          'Please fix the errors in red before submitting.', context);
+      showInSnackBar('Please fix the errors in red before submitting.', context);
     } else {
       try {
         loading = true;

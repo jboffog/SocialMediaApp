@@ -41,7 +41,7 @@ class _ConfirmStatusState extends State<ConfirmStatus> {
             child: TextFormField(
               style: TextStyle(
                 fontSize: 15.0,
-                color: Theme.of(context).textTheme.headline6!.color,
+                color: Theme.of(context).textTheme.titleLarge!.color,
               ),
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.all(10.0),
@@ -49,7 +49,7 @@ class _ConfirmStatusState extends State<ConfirmStatus> {
                 border: InputBorder.none,
                 hintText: "Type your caption",
                 hintStyle: TextStyle(
-                  color: Theme.of(context).textTheme.headline6!.color,
+                  color: Theme.of(context).textTheme.titleLarge!.color,
                 ),
               ),
               onSaved: (val) {
@@ -73,9 +73,7 @@ class _ConfirmStatusState extends State<ConfirmStatus> {
             loading = true;
           });
           //check if a user has uploaded a status
-          QuerySnapshot snapshot = await statusRef
-              .where('userId', isEqualTo: firebaseAuth.currentUser!.uid)
-              .get();
+          QuerySnapshot snapshot = await statusRef.where('userId', isEqualTo: firebaseAuth.currentUser!.uid).get();
           if (snapshot.docs.isNotEmpty) {
             List chatList = snapshot.docs;
             DocumentSnapshot chatListSnapshot = chatList[0];
@@ -116,8 +114,7 @@ class _ConfirmStatusState extends State<ConfirmStatus> {
   }
 
   Future<String> uploadMedia(File image) async {
-    Reference storageReference =
-        storage.ref().child("status").child(uuid.v1()).child(uuid.v4());
+    Reference storageReference = storage.ref().child("status").child(uuid.v1()).child(uuid.v4());
     UploadTask uploadTask = storageReference.putFile(image);
     await uploadTask.whenComplete(() => null);
     String imageUrl = await storageReference.getDownloadURL();

@@ -51,7 +51,7 @@ class PostsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  setPost(PostModel post) {
+  setPost(PostModel? post) {
     if (post != null) {
       description = post.description;
       imgLink = post.mediaUrl;
@@ -134,16 +134,13 @@ class PostsViewModel extends ChangeNotifier {
     notifyListeners();
     LocationPermission permission = await Geolocator.checkPermission();
     print(permission);
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
+    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
       LocationPermission rPermission = await Geolocator.requestPermission();
       print(rPermission);
       await getLocation();
     } else {
-      position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-          position!.latitude, position!.longitude);
+      position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      List<Placemark> placemarks = await placemarkFromCoordinates(position!.latitude, position!.longitude);
       placemark = placemarks[0];
       location = " ${placemarks[0].locality}, ${placemarks[0].country}";
       locationTEC.text = location!;
@@ -177,11 +174,9 @@ class PostsViewModel extends ChangeNotifier {
       try {
         loading = true;
         notifyListeners();
-        await postService.uploadProfilePicture(
-            mediaUrl!, firebaseAuth.currentUser!);
+        await postService.uploadProfilePicture(mediaUrl!, firebaseAuth.currentUser!);
         loading = false;
-        Navigator.of(context)
-            .pushReplacement(CupertinoPageRoute(builder: (_) => TabScreen()));
+        Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (_) => TabScreen()));
         notifyListeners();
       } catch (e) {
         print(e);

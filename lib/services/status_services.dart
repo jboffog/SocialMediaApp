@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/models/status.dart';
@@ -20,11 +20,7 @@ class StatusService {
 
   sendStatus(StatusModel status, String chatId) async {
     //will send message to chats collection with the usersId
-    await statusRef
-        .doc("$chatId")
-        .collection("statuses")
-        .doc(status.statusId)
-        .set(status.toJson());
+    await statusRef.doc("$chatId").collection("statuses").doc(status.statusId).set(status.toJson());
     //will update "lastTextTime" to the last time a text was sent
     await statusRef.doc("$chatId").update({
       "userId": firebaseAuth.currentUser!.uid,
@@ -38,7 +34,7 @@ class StatusService {
         ids.add(documentSnapshot.get('id'));
       });
     });
-    User? user = firebaseAuth.currentUser;
+    // User? user = firebaseAuth.currentUser;
     DocumentReference ref = await statusRef.add({
       'whoCanSee': ids,
     });
@@ -47,8 +43,7 @@ class StatusService {
   }
 
   Future<String> uploadImage(File image) async {
-    Reference storageReference =
-        storage.ref().child("chats").child(uuid.v1()).child(uuid.v4());
+    Reference storageReference = storage.ref().child("chats").child(uuid.v1()).child(uuid.v4());
     UploadTask uploadTask = storageReference.putFile(image);
     await uploadTask.whenComplete(() => null);
     String imageUrl = await storageReference.getDownloadURL();
