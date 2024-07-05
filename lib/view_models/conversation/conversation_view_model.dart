@@ -38,24 +38,25 @@ class ConversationViewModel extends ChangeNotifier {
   }
 
   pickImage({int? source, BuildContext? context, String? chatId}) async {
-    PickedFile? pickedFile = source == 0
-        ? await picker.getImage(
-            source: ImageSource.camera,
-          )
-        : await picker.getImage(
-            source: ImageSource.gallery,
-          );
+    // PickedFile? pickedFile = source == 0
+    XFile? pickedFile = source == 0
+        // ? await picker.getImage(source: ImageSource.camera)
+        ? await picker.pickImage(source: ImageSource.camera)
+        // : await picker.getImage(source: ImageSource.gallery);
+        : await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       CroppedFile? croppedFile = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
-        aspectRatioPresets: [
-          CropAspectRatioPreset.square,
-          CropAspectRatioPreset.ratio3x2,
-          CropAspectRatioPreset.original,
-          CropAspectRatioPreset.ratio4x3,
-          CropAspectRatioPreset.ratio16x9
-        ],
+
+        ///TODO:VER AQUI
+        // aspectRatioPresets: [
+        //   CropAspectRatioPreset.square,
+        //   CropAspectRatioPreset.ratio3x2,
+        //   CropAspectRatioPreset.original,
+        //   CropAspectRatioPreset.ratio4x3,
+        //   CropAspectRatioPreset.ratio16x9
+        // ],
         uiSettings: [
           AndroidUiSettings(
             toolbarTitle: 'Crop image',

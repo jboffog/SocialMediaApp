@@ -94,18 +94,20 @@ class PostsViewModel extends ChangeNotifier {
     loading = true;
     notifyListeners();
     try {
-      PickedFile? pickedFile = await picker.getImage(
-        source: camera ? ImageSource.camera : ImageSource.gallery,
-      );
+      // PickedFile? pickedFile = await picker.getImage(source: camera ? ImageSource.camera : ImageSource.gallery);
+      XFile? pickedFile = await picker.pickImage(source: camera ? ImageSource.camera : ImageSource.gallery);
+
       CroppedFile? croppedFile = await ImageCropper().cropImage(
         sourcePath: pickedFile!.path,
-        aspectRatioPresets: [
-          CropAspectRatioPreset.square,
-          CropAspectRatioPreset.ratio3x2,
-          CropAspectRatioPreset.original,
-          CropAspectRatioPreset.ratio4x3,
-          CropAspectRatioPreset.ratio16x9
-        ],
+
+        ///TODO:VER AQUI
+        // aspectRatioPresets: [
+        //   CropAspectRatioPreset.square,
+        //   CropAspectRatioPreset.ratio3x2,
+        //   CropAspectRatioPreset.original,
+        //   CropAspectRatioPreset.ratio4x3,
+        //   CropAspectRatioPreset.ratio16x9
+        // ],
         uiSettings: [
           AndroidUiSettings(
             toolbarTitle: 'Crop Image',
