@@ -13,6 +13,7 @@ import 'package:social_media_app/pages/profile.dart';
 import 'package:social_media_app/screens/comment.dart';
 import 'package:social_media_app/screens/view_image.dart';
 import 'package:social_media_app/services/post_service.dart';
+import 'package:social_media_app/utils/constants.dart';
 import 'package:social_media_app/utils/firebase.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -345,7 +346,7 @@ class UserPost extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              '${post?.location ?? 'Wooble'}',
+                              '${post?.location ?? Constants.appName}',
                               style: TextStyle(
                                 fontSize: 10.0,
                                 color: Color(0xff4D4D4D),

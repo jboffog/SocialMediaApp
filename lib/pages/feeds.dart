@@ -25,7 +25,7 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     scrollController.addListener(() async {
-      if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+      if (scrollController.position.pixels == scrollController.position.maxScrollExtent && !loadingMore) {
         setState(() {
           page = page + 5;
           loadingMore = true;
@@ -35,90 +35,57 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
     super.initState();
   }
 
+  Future<QuerySnapshot<Object?>> _refreshFeeds() async {
+    setState(() {
+      page = 5;
+    });
+    return await postRef.orderBy('timestamp', descending: true).limit(page).get();
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    print('>>>');
     return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          Constants.appName,
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(
-              Ionicons.chatbubble_ellipses,
-              size: 30.0,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                CupertinoPageRoute(
-                  builder: (_) => Chats(),
-                ),
-              );
-            },
-          ),
-          SizedBox(width: 20.0),
-        ],
-      ),
-      body: RefreshIndicator(
-        color: Theme.of(context).colorScheme.secondary,
-        onRefresh: () => postRef.orderBy('timestamp', descending: true).limit(page).get(),
-        child: SingleChildScrollView(
-          // controller: scrollController,
-          physics: NeverScrollableScrollPhysics(),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              StoryWidget(),
-              Container(
-                height: MediaQuery.of(context).size.height,
-                child: FutureBuilder(
-                  future: postRef.orderBy('timestamp', descending: true).limit(page).get(),
-                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasData) {
-                      var snap = snapshot.data;
-                      List docs = snap!.docs;
-                      return ListView.builder(
+        key: scaffoldKey,
+        appBar: AppBar(
+            automaticallyImplyLeading: false,
+            title: Text(Constants.appName, style: TextStyle(fontWeight: FontWeight.w900)),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                  icon: Icon(Ionicons.chatbubble_ellipses, size: 30.0),
+                  onPressed: () {
+                    Navigator.push(context, CupertinoPageRoute(builder: (_) => Chats()));
+                  }),
+              SizedBox(width: 20.0)
+            ]),
+        body: RefreshIndicator(
+            color: Theme.of(context).colorScheme.secondary,
+            onRefresh: _refreshFeeds,
+            child: FutureBuilder(
+                future: postRef.orderBy('timestamp', descending: true).limit(page).get(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasData) {
+                    var snap = snapshot.data;
+                    List docs = snap!.docs;
+
+                    return ListView.builder(
                         controller: scrollController,
-                        itemCount: docs.length,
-                        shrinkWrap: true,
+                        itemCount: docs.length + 1, // Adding 1 for the StoryWidget
                         itemBuilder: (context, index) {
-                          PostModel posts = PostModel.fromJson(docs[index].data());
-                          return Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: UserPost(post: posts),
-                          );
-                        },
-                      );
-                    } else if (snapshot.connectionState == ConnectionState.waiting) {
-                      return circularProgress(context);
-                    } else
-                      return Center(
-                        child: Text(
-                          'No Feeds',
-                          style: TextStyle(
-                            fontSize: 26.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+                          if (index == 0) {
+                            return Padding(padding: const EdgeInsets.only(left: 8.0), child: StoryWidget());
+                          }
+                          PostModel posts = PostModel.fromJson(docs[index - 1].data());
+                          return Padding(padding: const EdgeInsets.all(10.0), child: UserPost(post: posts));
+                        });
+                  } else if (snapshot.connectionState == ConnectionState.waiting) {
+                    return circularProgress(context);
+                  } else {
+                    return Center(
+                        child: Text('No Feeds', style: TextStyle(fontSize: 26.0, fontWeight: FontWeight.bold)));
+                  }
+                })));
   }
 
   @override

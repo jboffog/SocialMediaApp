@@ -15,47 +15,46 @@ class StreamGridWrapper extends StatelessWidget {
   final ScrollPhysics physics;
   final EdgeInsets padding;
 
-  const StreamGridWrapper({
-    Key? key,
-    required this.stream,
-    required this.itemBuilder,
-    this.scrollDirection = Axis.vertical,
-    this.shrinkWrap = false,
-    this.physics = const ClampingScrollPhysics(),
-    this.padding = const EdgeInsets.only(bottom: 2.0, left: 2.0),
-  }) : super(key: key);
+  const StreamGridWrapper(
+      {Key? key,
+      required this.stream,
+      required this.itemBuilder,
+      this.scrollDirection = Axis.vertical,
+      this.shrinkWrap = false,
+      this.physics = const ClampingScrollPhysics(),
+      this.padding = const EdgeInsets.only(bottom: 2.0, left: 2.0)})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: stream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          var list = snapshot.data!.docs.toList();
-          return list.length == 0
-              ? Container(
-                  child: Center(
-                    child: Text('No Posts'),
-                  ),
-                )
-              : GridView.builder(
-                  padding: padding,
-                  scrollDirection: scrollDirection,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    childAspectRatio: 3 / 3,
-                  ),
-                  itemCount: list.length,
-                  shrinkWrap: shrinkWrap,
-                  physics: physics,
-                  itemBuilder: (BuildContext context, int index) {
-                    return itemBuilder(context, list[index]);
-                  },
-                );
-        } else {
-          return circularProgress(context);
-        }
-      },
-    );
+        stream: stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var list = snapshot.data!.docs.toList();
+            print('Snapshot has data. Number of documents: ${list.length}');
+            return list.length == 0
+                ? Container(child: Center(child: Text('No Posts')))
+                : GridView.builder(
+                    padding: padding,
+                    scrollDirection: scrollDirection,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, childAspectRatio: 3 / 3),
+                    itemCount: list.length,
+                    shrinkWrap: shrinkWrap,
+                    physics: physics,
+                    itemBuilder: (BuildContext context, int index) {
+                      print('Building item at index: $index');
+                      print('Document data: ${list[index].data()}');
+                      return itemBuilder(context, list[index]);
+                    },
+                  );
+          } else if (snapshot.hasError) {
+            print('Snapshot has error: ${snapshot.error}');
+            return Center(child: Text('Error loading posts'));
+          } else {
+            print('Snapshot does not have data.');
+            return circularProgress(context);
+          }
+        });
   }
 }

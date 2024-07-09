@@ -57,30 +57,25 @@ class StatusViewModel extends ChangeNotifier {
     try {
       // PickedFile? pickedFile = await picker.getImage(source: camera ? ImageSource.camera : ImageSource.gallery);
       XFile? pickedFile = await picker.pickImage(source: camera ? ImageSource.camera : ImageSource.gallery);
-      CroppedFile? croppedFile = await ImageCropper().cropImage(
-        sourcePath: pickedFile!.path,
 
-        ///TODO:VER AQUI
-        // aspectRatioPresets: [
-        //   CropAspectRatioPreset.square,
-        //   CropAspectRatioPreset.ratio3x2,
-        //   CropAspectRatioPreset.original,
-        //   CropAspectRatioPreset.ratio4x3,
-        //   CropAspectRatioPreset.ratio16x9
-        // ],
-        uiSettings: [
-          AndroidUiSettings(
+      List<CropAspectRatioPresetData> aspectRatioPresets = [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio16x9
+      ];
+
+      CroppedFile? croppedFile = await ImageCropper().cropImage(sourcePath: pickedFile!.path, uiSettings: [
+        AndroidUiSettings(
             toolbarTitle: 'Crop Image',
             toolbarColor: Constants.lightAccent,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false,
-          ),
-          IOSUiSettings(
-            minimumAspectRatio: 1.0,
-          ),
-        ],
-      );
+            aspectRatioPresets: aspectRatioPresets),
+        IOSUiSettings(minimumAspectRatio: 1.0, aspectRatioPresets: aspectRatioPresets)
+      ]);
       mediaUrl = File(croppedFile!.path);
       loading = false;
       Navigator.of(context!).push(

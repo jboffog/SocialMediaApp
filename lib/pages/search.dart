@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -35,6 +33,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
   getUsers() async {
     QuerySnapshot snap = await usersRef.get();
     List<DocumentSnapshot> doc = snap.docs;
+    doc = doc.where((element) => element.id != currentUserId()).toList();
     users = doc;
     filteredUsers = doc;
     setState(() {
@@ -71,219 +70,129 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          Constants.appName,
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: RefreshIndicator(
-        color: Theme.of(context).colorScheme.secondary,
-        onRefresh: () => getUsers(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: buildSearch(),
-            ),
-            buildUsers(),
-          ],
-        ),
-      ),
-    );
+        appBar: AppBar(
+            automaticallyImplyLeading: false,
+            title: Text(Constants.appName, style: TextStyle(fontWeight: FontWeight.w900)),
+            centerTitle: true),
+        body: RefreshIndicator(
+            color: Theme.of(context).colorScheme.secondary,
+            onRefresh: () => getUsers(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [Padding(padding: EdgeInsets.symmetric(horizontal: 20.0), child: buildSearch()), buildUsers()],
+            )));
   }
 
   buildSearch() {
-    return Row(
-      children: [
-        Container(
+    return Row(children: [
+      Container(
           height: 30.0,
           width: MediaQuery.of(context).size.width - 50,
-          decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(20.0),
-          ),
+          decoration: BoxDecoration(color: Colors.grey.withOpacity(0.2), borderRadius: BorderRadius.circular(20.0)),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0),
-            child: TextFormField(
-              controller: searchController,
-              textAlignVertical: TextAlignVertical.center,
-              maxLength: 10,
-              maxLengthEnforcement: MaxLengthEnforcement.enforced,
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(20),
-              ],
-              textCapitalization: TextCapitalization.sentences,
-              onChanged: (query) {
-                search(query);
-              },
-              decoration: InputDecoration(
-                suffixIcon: GestureDetector(
-                  onTap: () {
-                    searchController.clear();
-                  },
-                  child: Icon(
-                    Ionicons.close_outline,
-                    size: 12.0,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-                // contentPadding: EdgeInsets.only(bottom: 10.0, left: 10.0),
-                border: InputBorder.none,
-                counterText: '',
-                hintText: 'Search...',
-                hintStyle: TextStyle(
-                  fontSize: 13.0,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: TextFormField(
+                  controller: searchController,
+                  textAlignVertical: TextAlignVertical.center,
+                  maxLength: 10,
+                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                  inputFormatters: [LengthLimitingTextInputFormatter(20)],
+                  textCapitalization: TextCapitalization.sentences,
+                  onChanged: (query) => search(query),
+                  decoration: InputDecoration(
+                      suffixIcon: GestureDetector(
+                          onTap: () {
+                            searchController.clear();
+                            setState(() {
+                              search("");
+                            });
+                          },
+                          child:
+                              Icon(Ionicons.close_outline, size: 12.0, color: Theme.of(context).colorScheme.secondary)),
+                      // contentPadding: EdgeInsets.only(bottom: 10.0, left: 10.0),
+                      border: InputBorder.none,
+                      counterText: '',
+                      hintText: 'Search...',
+                      hintStyle: TextStyle(fontSize: 13.0)))))
+    ]);
   }
 
   buildUsers() {
     if (!loading) {
       if (filteredUsers.isEmpty) {
         return Center(
-          child: Text(
-            "No User Found",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        );
+            child: Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text("No User Found", style: TextStyle(fontWeight: FontWeight.bold))));
       } else {
         return Expanded(
-          child: Container(
-            child: ListView.builder(
-              itemCount: filteredUsers.length,
-              itemBuilder: (BuildContext context, int index) {
-                DocumentSnapshot doc = filteredUsers[index];
-                UserModel user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
-                if (doc.id == currentUserId()) {
-                  Timer(Duration(milliseconds: 500), () {
-                    setState(() {
-                      removeFromList(index);
-                    });
-                  });
-                }
-                return ListTile(
-                  onTap: () => showProfile(context, profileId: user.id!),
-                  leading: user.photoUrl!.isEmpty
-                      ? CircleAvatar(
-                          radius: 20.0,
-                          backgroundColor: Theme.of(context).colorScheme.secondary,
-                          child: Center(
-                            child: Text(
-                              '${user.username![0].toUpperCase()}',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ),
-                        )
-                      : CircleAvatar(
-                          radius: 20.0,
-                          backgroundImage: CachedNetworkImageProvider(
-                            '${user.photoUrl}',
-                          ),
-                        ),
-                  title: Text(
-                    user.username!,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    user.email!,
-                  ),
-                  trailing: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (_) => StreamBuilder(
-                            stream: chatIdRef
-                                .where(
-                                  "users",
-                                  isEqualTo: getUser(
-                                    firebaseAuth.currentUser!.uid,
-                                    doc.id,
-                                  ),
-                                )
-                                .snapshots(),
-                            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                              if (snapshot.hasData) {
-                                var snap = snapshot.data;
-                                List docs = snap!.docs;
-                                print(snapshot.data!.docs.toString());
-                                return docs.isEmpty
-                                    ? Conversation(
-                                        userId: doc.id,
-                                        chatId: 'newChat',
-                                      )
-                                    : Conversation(
-                                        userId: doc.id,
-                                        chatId: docs[0].get('chatId').toString(),
-                                      );
-                              }
-                              return Conversation(
-                                userId: doc.id,
-                                chatId: 'newChat',
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      height: 30.0,
-                      width: 62.0,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondary,
-                        borderRadius: BorderRadius.circular(3.0),
-                      ),
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Text(
-                            'Message',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        );
+            child: Container(
+                child: ListView.builder(
+                    itemCount: filteredUsers.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      DocumentSnapshot doc = filteredUsers[index];
+                      UserModel user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
+                      return ListTile(
+                          onTap: () => showProfile(context, profileId: user.id!),
+                          leading: user.photoUrl!.isEmpty
+                              ? CircleAvatar(
+                                  radius: 20.0,
+                                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                                  child: Center(
+                                      child: Text('${user.username![0].toUpperCase()}',
+                                          style: TextStyle(
+                                              color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.w900))))
+                              : CircleAvatar(
+                                  radius: 20.0, backgroundImage: CachedNetworkImageProvider('${user.photoUrl}')),
+                          title: Text(user.username!, style: TextStyle(fontWeight: FontWeight.bold)),
+                          subtitle: Text(user.email!),
+                          trailing: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (_) => StreamBuilder(
+                                            stream: chatIdRef
+                                                .where("users",
+                                                    isEqualTo: getUser(firebaseAuth.currentUser!.uid, doc.id))
+                                                .snapshots(),
+                                            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                                              if (snapshot.hasData) {
+                                                var snap = snapshot.data;
+                                                List docs = snap!.docs;
+                                                print(snapshot.data!.docs.toString());
+                                                return docs.isEmpty
+                                                    ? Conversation(userId: doc.id, chatId: 'newChat')
+                                                    : Conversation(
+                                                        userId: doc.id, chatId: docs[0].get('chatId').toString());
+                                              }
+                                              return Conversation(userId: doc.id, chatId: 'newChat');
+                                            })));
+                              },
+                              child: Container(
+                                  height: 30.0,
+                                  width: 62.0,
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.secondary,
+                                      borderRadius: BorderRadius.circular(3.0)),
+                                  child: Center(
+                                      child: Padding(
+                                          padding: const EdgeInsets.all(5.0),
+                                          child: Text('Message',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 12.0,
+                                                  fontWeight: FontWeight.bold)))))));
+                    })));
       }
     } else {
-      return Center(
-        child: circularProgress(context),
-      );
+      return Center(child: circularProgress(context));
     }
   }
 
   showProfile(BuildContext context, {String? profileId}) {
-    Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (_) => Profile(profileId: profileId),
-      ),
-    );
+    Navigator.push(context, CupertinoPageRoute(builder: (_) => Profile(profileId: profileId)));
   }
 
   //get concatenated list of users

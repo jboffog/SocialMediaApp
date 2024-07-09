@@ -46,30 +46,23 @@ class ConversationViewModel extends ChangeNotifier {
         : await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      CroppedFile? croppedFile = await ImageCropper().cropImage(
-        sourcePath: pickedFile.path,
-
-        ///TODO:VER AQUI
-        // aspectRatioPresets: [
-        //   CropAspectRatioPreset.square,
-        //   CropAspectRatioPreset.ratio3x2,
-        //   CropAspectRatioPreset.original,
-        //   CropAspectRatioPreset.ratio4x3,
-        //   CropAspectRatioPreset.ratio16x9
-        // ],
-        uiSettings: [
-          AndroidUiSettings(
+      List<CropAspectRatioPresetData> aspectRatioPresets = [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio16x9
+      ];
+      CroppedFile? croppedFile = await ImageCropper().cropImage(sourcePath: pickedFile.path, uiSettings: [
+        AndroidUiSettings(
+            aspectRatioPresets: aspectRatioPresets,
             toolbarTitle: 'Crop image',
             toolbarColor: Theme.of(context!).appBarTheme.backgroundColor,
             toolbarWidgetColor: Theme.of(context).iconTheme.color,
             initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false,
-          ),
-          IOSUiSettings(
-            minimumAspectRatio: 1.0,
-          ),
-        ],
-      );
+            lockAspectRatio: false),
+        IOSUiSettings(minimumAspectRatio: 1.0, aspectRatioPresets: aspectRatioPresets)
+      ]);
 
       Navigator.of(context).pop();
 

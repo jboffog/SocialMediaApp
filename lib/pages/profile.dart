@@ -4,13 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:social_media_app/auth/register/register.dart';
 import 'package:social_media_app/components/stream_grid_wrapper.dart';
+import 'package:social_media_app/landing/landing_page.dart';
 import 'package:social_media_app/models/post.dart';
 import 'package:social_media_app/models/user.dart';
 import 'package:social_media_app/screens/edit_profile.dart';
 import 'package:social_media_app/screens/list_posts.dart';
 import 'package:social_media_app/screens/settings.dart';
+import 'package:social_media_app/utils/constants.dart';
 import 'package:social_media_app/utils/firebase.dart';
 import 'package:social_media_app/widgets/post_tiles.dart';
 
@@ -57,7 +58,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('WOOBLE'),
+        title: Text(Constants.appName),
         actions: [
           widget.profileId == firebaseAuth.currentUser!.uid
               ? Center(
@@ -66,11 +67,8 @@ class _ProfileState extends State<Profile> {
                     child: GestureDetector(
                       onTap: () async {
                         await firebaseAuth.signOut();
-                        Navigator.of(context).push(
-                          CupertinoPageRoute(
-                            builder: (_) => Register(),
-                          ),
-                        );
+                        Navigator.of(context).pushAndRemoveUntil(
+                            CupertinoPageRoute(builder: (_) => Landing()), ModalRoute.withName('/'));
                       },
                       child: Text(
                         'Log Out',
@@ -105,117 +103,73 @@ class _ProfileState extends State<Profile> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 20.0),
-                              child: user.photoUrl!.isEmpty
-                                  ? CircleAvatar(
-                                      radius: 40.0,
-                                      backgroundColor: Theme.of(context).colorScheme.secondary,
-                                      child: Center(
-                                        child: Text(
-                                          '${user.username![0].toUpperCase()}',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 15.0,
-                                            fontWeight: FontWeight.w900,
-                                          ),
+                        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: user.photoUrl!.isEmpty
+                                ? CircleAvatar(
+                                    radius: 40.0,
+                                    backgroundColor: Theme.of(context).colorScheme.secondary,
+                                    child: Center(
+                                      child: Text(
+                                        '${user.username![0].toUpperCase()}',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15.0,
+                                          fontWeight: FontWeight.w900,
                                         ),
+                                      ),
+                                    ),
+                                  )
+                                : CircleAvatar(
+                                    radius: 40.0,
+                                    backgroundImage: CachedNetworkImageProvider(
+                                      '${user.photoUrl}',
+                                    ),
+                                  ),
+                          ),
+                          SizedBox(width: 20.0),
+                          Expanded(
+                              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            SizedBox(height: 32.0),
+                            Row(children: [
+                              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                Container(
+                                    width: 130.0,
+                                    child: Text(user.username!,
+                                        style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w900), maxLines: null)),
+                                Container(
+                                    width: 130.0,
+                                    child: Text(user.country!,
+                                        style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w600),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis)),
+                                SizedBox(width: 10.0),
+                                Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [Text(user.email!, style: TextStyle(fontSize: 10.0))])
+                              ]),
+                              Spacer(),
+                              widget.profileId == currentUserId()
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(right: 20),
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.of(context).push(CupertinoPageRoute(builder: (_) => Setting()));
+                                        },
+                                        child: Column(children: [
+                                          Icon(Ionicons.settings_outline,
+                                              color: Theme.of(context).colorScheme.secondary),
+                                          Text('settings', style: TextStyle(fontSize: 11.5))
+                                        ]),
                                       ),
                                     )
-                                  : CircleAvatar(
-                                      radius: 40.0,
-                                      backgroundImage: CachedNetworkImageProvider(
-                                        '${user.photoUrl}',
-                                      ),
-                                    ),
-                            ),
-                            SizedBox(width: 20.0),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(height: 32.0),
-                                Row(
-                                  children: [
-                                    Visibility(
-                                      visible: false,
-                                      child: SizedBox(width: 10.0),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          width: 130.0,
-                                          child: Text(
-                                            user.username!,
-                                            style: TextStyle(
-                                              fontSize: 15.0,
-                                              fontWeight: FontWeight.w900,
-                                            ),
-                                            maxLines: null,
-                                          ),
-                                        ),
-                                        Container(
-                                          width: 130.0,
-                                          child: Text(
-                                            user.country!,
-                                            style: TextStyle(
-                                              fontSize: 12.0,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        SizedBox(width: 10.0),
-                                        Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              user.email!,
-                                              style: TextStyle(
-                                                fontSize: 10.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    widget.profileId == currentUserId()
-                                        ? InkWell(
-                                            onTap: () {
-                                              Navigator.of(context).push(
-                                                CupertinoPageRoute(
-                                                  builder: (_) => Setting(),
-                                                ),
-                                              );
-                                            },
-                                            child: Column(
-                                              children: [
-                                                Icon(
-                                                  Ionicons.settings_outline,
-                                                  color: Theme.of(context).colorScheme.secondary,
-                                                ),
-                                                Text(
-                                                  'settings',
-                                                  style: TextStyle(
-                                                    fontSize: 11.5,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          )
-                                        : const Text('')
-                                    // : buildLikeButton()
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                                  : const Text('')
+                              // : buildLikeButton()
+                            ])
+                          ]))
+                        ]),
                         Padding(
                           padding: const EdgeInsets.only(top: 10.0, left: 20.0),
                           child: user.bio!.isEmpty
@@ -296,6 +250,7 @@ class _ProfileState extends State<Profile> {
                             ),
                           ),
                         ),
+                        SizedBox(height: 10),
                         buildProfileButton(user),
                       ],
                     );

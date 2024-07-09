@@ -52,126 +52,125 @@ class _ConversationState extends State<Conversation> {
     });
   }
 
-  setTyping(typing) {
-    UserViewModel viewModel = Provider.of<UserViewModel>(context);
+  setTyping(bool typing) {
+    UserViewModel viewModel = Provider.of<UserViewModel>(context, listen: false);
     viewModel.setUser();
-    var user = Provider.of<UserViewModel>(context, listen: true).user;
+    var user = viewModel.user;
     Provider.of<ConversationViewModel>(context, listen: false).setUserTyping(widget.chatId, user, typing);
   }
 
   @override
   Widget build(BuildContext context) {
-    UserViewModel viewModel = Provider.of<UserViewModel>(context);
-    viewModel.setUser();
-    var user = Provider.of<UserViewModel>(context, listen: true).user;
-    return Consumer<ConversationViewModel>(builder: (BuildContext context, viewModel, Widget? child) {
-      return Scaffold(
-        key: viewModel.scaffoldKey,
-        appBar: AppBar(
-          leading: GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Icon(
-              Icons.keyboard_backspace,
-            ),
-          ),
-          elevation: 0.0,
-          titleSpacing: 0,
-          title: buildUserName(),
-        ),
-        body: Container(
-          height: MediaQuery.of(context).size.height,
-          child: Column(
-            children: [
-              Flexible(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: messageListStream(widget.chatId),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      List messages = snapshot.data!.docs;
-                      viewModel.setReadCount(widget.chatId, user, messages.length);
-                      return ListView.builder(
-                        controller: scrollController,
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        itemCount: messages.length,
-                        reverse: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          Message message = Message.fromJson(
-                            messages.reversed.toList()[index].data(),
-                          );
-                          return ChatBubbleWidget(
-                            message: '${message.content}',
-                            time: message.time!,
-                            isMe: message.senderUid == user!.uid,
-                            type: message.type!,
-                          );
-                        },
-                      );
-                    } else {
-                      return Center(child: circularProgress(context));
-                    }
-                  },
-                ),
+    UserViewModel userViewModel = Provider.of<UserViewModel>(context, listen: false);
+    userViewModel.setUser();
+    var user = userViewModel.user;
+    return Consumer<ConversationViewModel>(
+      builder: (BuildContext context, viewModel, Widget? child) {
+        return Scaffold(
+          key: viewModel.scaffoldKey,
+          appBar: AppBar(
+            leading: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Icon(
+                Icons.keyboard_backspace,
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: BottomAppBar(
-                  elevation: 10.0,
-                  child: Container(
-                    constraints: BoxConstraints(maxHeight: 100.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            CupertinoIcons.photo_on_rectangle,
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          onPressed: () => showPhotoOptions(viewModel, user),
-                        ),
-                        Flexible(
-                          child: TextField(
-                            controller: messageController,
-                            focusNode: focusNode,
-                            style: TextStyle(fontSize: 15.0, color: Theme.of(context).textTheme.titleLarge!.color),
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.all(10.0),
-                              enabledBorder: InputBorder.none,
-                              border: InputBorder.none,
-                              hintText: "Type your message",
-                              hintStyle: TextStyle(color: Theme.of(context).textTheme.titleLarge!.color),
-                            ),
-                            maxLines: null,
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Ionicons.send,
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          onPressed: () {
-                            if (messageController.text.isNotEmpty) {
-                              sendMessage(viewModel, user);
-                            }
+            ),
+            elevation: 0.0,
+            titleSpacing: 0,
+            title: buildUserName(),
+          ),
+          body: Container(
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              children: [
+                Flexible(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: messageListStream(widget.chatId),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        List messages = snapshot.data!.docs;
+                        viewModel.setReadCount(widget.chatId, user, messages.length);
+                        return ListView.builder(
+                          controller: scrollController,
+                          padding: EdgeInsets.symmetric(horizontal: 10.0),
+                          itemCount: messages.length,
+                          reverse: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            Message message = Message.fromJson(
+                              messages.reversed.toList()[index].data(),
+                            );
+                            return ChatBubbleWidget(
+                              message: '${message.content}',
+                              time: message.time!,
+                              isMe: message.senderUid == user!.uid,
+                              type: message.type!,
+                            );
                           },
-                        ),
-                      ],
-                    ),
+                        );
+                      } else {
+                        return Center(child: circularProgress(context));
+                      }
+                    },
                   ),
                 ),
-              )
-            ],
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: BottomAppBar(
+                    elevation: 10.0,
+                    child: Container(
+                      constraints: BoxConstraints(maxHeight: 100.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              CupertinoIcons.photo_on_rectangle,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                            onPressed: () => showPhotoOptions(viewModel, user),
+                          ),
+                          Flexible(
+                            child: TextField(
+                              controller: messageController,
+                              focusNode: focusNode,
+                              style: TextStyle(fontSize: 15.0, color: Theme.of(context).textTheme.titleLarge!.color),
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.all(10.0),
+                                enabledBorder: InputBorder.none,
+                                border: InputBorder.none,
+                                hintText: "Type your message",
+                                hintStyle: TextStyle(color: Theme.of(context).textTheme.titleLarge!.color),
+                              ),
+                              maxLines: null,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Ionicons.send,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                            onPressed: () {
+                              if (messageController.text.isNotEmpty) {
+                                sendMessage(viewModel, user);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 
-  _buildOnlineText(
-    var user,
-    bool typing,
-  ) {
+  _buildOnlineText(var user, bool typing) {
     if (user.isOnline) {
       if (typing) {
         return "typing...";

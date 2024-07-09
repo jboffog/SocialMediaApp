@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:social_media_app/models/user.dart';
 import 'package:social_media_app/screens/view_image.dart';
 import 'package:social_media_app/services/services.dart';
+import 'package:social_media_app/utils/constants.dart';
 import 'package:social_media_app/utils/firebase.dart';
 import 'package:uuid/uuid.dart';
 
@@ -35,7 +36,7 @@ class PostService extends Service {
       "ownerId": firebaseAuth.currentUser!.uid,
       "mediaUrl": link,
       "description": description ?? "",
-      "location": location ?? "Wooble",
+      "location": location ?? Constants.appName,
       "timestamp": Timestamp.now(),
     }).catchError((e) {
       print(e);
